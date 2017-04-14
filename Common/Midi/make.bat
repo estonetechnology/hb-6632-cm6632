@@ -1,0 +1,1 @@
+c51 ..\Common\Midi\midi.c %C51FLAGS% "OBJECT(midi.obj)"
