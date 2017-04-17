@@ -38,7 +38,7 @@
 #define VENDOR_ID 0x8C0D
 #define PRODUCT_ID 0x1503
 
-#define VERSION_ID 0x0413
+#define VERSION_ID 0x0417
 
 #endif
 

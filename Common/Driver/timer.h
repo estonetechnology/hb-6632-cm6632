@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 extern volatile BYTE g_Tick10ms;
 extern volatile BYTE g_Tick500ms;
-extern volatile BYTE g_Tick500ms_Switch;
+extern volatile BOOL g_Tick500ms_Switch;
 
 #endif
 

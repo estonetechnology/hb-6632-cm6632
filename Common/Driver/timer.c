@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 volatile BYTE g_Tick10ms = 0;
 volatile BYTE g_Tick500ms = 0;
-volatile BYTE g_Tick500ms_Switch;
+volatile BOOL g_Tick500ms_Switch = FALSE;
 
 //-----------------------------------------------------------------------------
 // Code
@@ -17,7 +17,7 @@ static void ISR_TMR0() interrupt 1
 
 	++ g_Tick10ms;
 	
-	if (g_Tick500ms_Switch == 1)
+	if (g_Tick500ms_Switch == TRUE)
 		++ g_Tick500ms;
 }
 

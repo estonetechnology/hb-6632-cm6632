@@ -61,7 +61,6 @@ typedef struct
 // Global Variables
 //-----------------------------------------------------------------------------
 BOOL g_IsAudioClass20;
-int g_PlayMode = 0;
 
 //-----------------------------------------------------------------------------
 // Volume Variables
@@ -1198,9 +1197,9 @@ void AudioProcess()
 	if(g_Tick10ms > 30)
 	{
 		g_Tick10ms = 0;
-
+		
 		HandleSpdifIn();
-
+		
 		if(s_bPlaybackStartCount)
 		{
 			g_TempByte1 = PERI_ReadByte(GPIO_DATA_H);
@@ -1208,14 +1207,12 @@ void AudioProcess()
 			if(g_TempByte1 & bmBIT5)
 			{
 				PERI_WriteByte(GPIO_DATA_H, g_TempByte1 & ~bmBIT5);
-				//PERI_WriteByte(GPIO_DATA_H, g_TempByte1 & ~bmBIT4);	/*test*/ 
 			}
 			else
 			{
 				PERI_WriteByte(GPIO_DATA_H, g_TempByte1 | bmBIT5);
-				//PERI_WriteByte(GPIO_DATA_H, g_TempByte1 | bmBIT4);	/*test*/ 
 			}
-		}
+		}	
 	}
 }
 
@@ -1532,6 +1529,8 @@ void SetRecordMute(BOOL mute)
 #ifdef _MODEL_CM6632A_
 //add ben Modify bclk
 // Control CS4382
+
+extern BOOL g_PlayMute;
 BOOL PlayMultiChStart(BYTE ch, BYTE format)
 {
 #ifdef _I2C_SLAVE_SUPPORT_

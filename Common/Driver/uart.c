@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------
 // Data Type Definition
 //-----------------------------------------------------------------------------
+#if 0
 #define TX_BUF_SIZE 4
 #define TX_BUF_MASK 3	// BUF_SIZE-1
 
@@ -30,12 +31,14 @@ static UART_TX_QUEUE idata s_UartTxQueue;
 static UART_RX_QUEUE idata s_UartRxQueue;
 
 static volatile BOOL s_UartTxIdle = TRUE;
+#endif
 
 //-----------------------------------------------------------------------------
 // Code
 //-----------------------------------------------------------------------------
 static void ISR_UART() interrupt 4
 {
+	/*
 	if(TI)
 	{
 		if(s_UartTxQueue.head != s_UartTxQueue.tail)
@@ -60,22 +63,29 @@ static void ISR_UART() interrupt 4
 
 		RI = 0;
 	}
+	*/
 }
 
 void UartInit()
 {
+	/*
 	s_UartTxQueue.head = s_UartTxQueue.tail = 0;
 	s_UartRxQueue.head = s_UartRxQueue.tail = 0;	
+	*/
 }
 
 BOOL TxQueueIsFull()
 {
+	/*
 	return (s_UartTxQueue.head == ((s_UartTxQueue.tail-1) & TX_BUF_MASK));
+	*/
 }
 
 BOOL RxQueueIsEmpty()
 {
+	/*
 	return (s_UartRxQueue.head == s_UartRxQueue.tail);
+	*/
 }
 
 /*BOOL TxQueueIsEmpty()
@@ -85,10 +95,12 @@ BOOL RxQueueIsEmpty()
 
 BYTE GetFromRxQueue()
 {
+	/*
 	g_TempByte1 = s_UartRxQueue.buf[s_UartRxQueue.tail];
 	s_UartRxQueue.tail = (s_UartRxQueue.tail + 1) & RX_BUF_MASK;
 
 	return g_TempByte1;
+	*/
 }
 
 /*BYTE GetFromTxQueue()
@@ -108,6 +120,7 @@ BYTE GetFromRxQueue()
 
 void PutIntoTxQueue(BYTE value)
 {
+	/*
 	s_UartTxQueue.buf[s_UartTxQueue.head] = value;
 	s_UartTxQueue.head ++;
 	s_UartTxQueue.head &= TX_BUF_MASK;
@@ -116,5 +129,6 @@ void PutIntoTxQueue(BYTE value)
 	{
 		TI = 1;
 	}
+	*/
 }
 

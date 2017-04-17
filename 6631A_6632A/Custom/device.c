@@ -23,7 +23,7 @@ extern BYTE code StringDscr;
 // Static Variables
 //-----------------------------------------------------------------------------
 static BOOL s_RecordMute = FALSE;
-static BOOL s_PlayMute = FALSE;
+BOOL g_PlayMute = FALSE;
 
 //-----------------------------------------------------------------------------
 // Build up USB device
@@ -224,8 +224,8 @@ static USB_DEVICE code s_Audio10FullSpeedDevice =
 //-----------------------------------------------------------------------------
 void HandleGpio()
 {
-	g_InputReport.source |= bmBIT0;
-	SendInputReport();
+	//g_InputReport.source |= bmBIT0;
+	//SendInputReport();
 }
 
 void HandleGpi()
@@ -236,7 +236,7 @@ void HandleGpi()
 	if(g_TempByte1 & bmBIT3)  // Record Mute
 	{
 		s_RecordMute = !s_RecordMute;
-		SetRecordMute(s_RecordMute);			
+		//SetRecordMute(s_RecordMute);			
 	}
 
 	g_InputReport.source |= bmBIT1;
@@ -473,9 +473,11 @@ static void GpioInit()
 	
 	//add ben gpio12 低电平
 	PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) & (~bmBIT4));
+	
+	//add ben gpio11 高电平
+	PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) | bmBIT3);
 }
 
-extern int g_PlayMode;
 static void PowerOnReset()
 {
 #ifdef _REMOTE_WAKEUP_
@@ -513,14 +515,13 @@ static void PowerOnReset()
 	RegisterUsbDevice(&s_Audio20HighSpeedDevice);
 	
 	//add ben
-	g_PlayMode = 0;
-	s_PlayMute = FALSE;
+	g_PlayMute = FALSE;
 }	
 
 void main()
 {
 	PowerOnReset();
-
+	
 	// Main Loop
 	while(TRUE)
 	{
@@ -534,44 +535,46 @@ void main()
 		{
 			g_GpioRequest = FALSE;
 			HandleGpio();
-		}
-
+		} 
+		
 		UsbProcess();
 
 		if(g_UsbIsActive)
 		{
 			//add ben
-			if (s_PlayMute == FALSE)
+			if (g_PlayMute == FALSE)
 			{
-				g_Tick500ms_Switch = 1;
+				g_Tick500ms_Switch = TRUE;
 				if(g_Tick500ms > 100)
 				{
-					g_Tick500ms_Switch = 0;
+					g_Tick500ms_Switch = FALSE;
 					g_Tick500ms = 0;
-					s_PlayMute = TRUE;
+					g_PlayMute = TRUE;
 				}					
 			}
 			else
 			{
-				g_Tick500ms_Switch = 0;	
+				g_Tick500ms_Switch = FALSE;	
 				g_Tick500ms = 0;			
 			}	
 		}	
 		else
 		{
-				g_Tick500ms_Switch = 0;	
+				g_Tick500ms_Switch = FALSE;	
 				g_Tick500ms = 0;
-				s_PlayMute = FALSE;	
+				g_PlayMute = FALSE;	
 		}	
 		
-		if (s_PlayMute == FALSE)
+		if (g_PlayMute == FALSE)
 		{
-			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) & (~bmBIT4));	
+			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) & (~bmBIT4));
+			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) | bmBIT3);			
 		}	
 		else
 		{
 			//add ben gpio12 高电平
-			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) | bmBIT4);				
+			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) | bmBIT4);
+			PERI_WriteByte(GPIO_DATA_H, PERI_ReadByte(GPIO_DATA_H) & (~bmBIT3));
 		}	
 		
 		if(g_UsbIsActive)
@@ -587,6 +590,7 @@ void main()
 //-----------------------------------------------------------------------------
 // For debugging
 //-----------------------------------------------------------------------------
+#if 0
 #ifdef _DEBUG_
 
 #include "uart.h"
@@ -613,6 +617,6 @@ void PrintByte(BYTE i)
 	PutChar(s_HexAscii[(i>>4) & 0x0F]);
 	PutChar(s_HexAscii[i & 0x0F]);
 }
-
+#endif
 #endif
 
